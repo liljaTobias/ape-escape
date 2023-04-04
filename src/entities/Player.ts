@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import { Geom, Math, Scene } from "phaser";
 import { Actor } from "./Actor";
 
 const SPEED = 200;
@@ -8,6 +8,7 @@ export default class Player extends Actor {
   private keyA: Phaser.Input.Keyboard.Key;
   private keyS: Phaser.Input.Keyboard.Key;
   private keyD: Phaser.Input.Keyboard.Key;
+
   constructor(scene: Scene, x: number, y: number) {
     super(scene, x, y, "king");
 
@@ -17,7 +18,7 @@ export default class Player extends Actor {
     this.keyS = this.scene.input.keyboard.addKey("S");
     this.keyD = this.scene.input.keyboard.addKey("D");
 
-    scene.add.existing(this);
+    this.getBody().setSize(30, 30);
   }
 
   update(): void {
@@ -34,5 +35,15 @@ export default class Player extends Actor {
     if (this.keyD.isDown) {
       this.body.velocity.x = SPEED;
     }
+
+    // Mouse
+    const mouseX = this.scene.input.mousePointer.worldX;
+    const mouseY = this.scene.input.mousePointer.worldY;
+    this.rotation = Math.Angle.Between(
+      this.getBody().x,
+      this.getBody().y,
+      mouseX,
+      mouseY
+    );
   }
 }

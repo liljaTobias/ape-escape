@@ -5,15 +5,14 @@ export default {
   parent: "game",
   backgroundColor: "#33A5E7",
   scale: {
-    width: 800,
-    height: 600,
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    mode: Phaser.Scale.ScaleModes.NONE,
+    width: window.innerWidth,
+    height: window.innerHeight,
   },
   physics: {
     default: "arcade",
     arcade: {
-      debug: false,
+      debug: true,
     },
   },
 };
