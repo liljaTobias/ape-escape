@@ -4,7 +4,7 @@
   <export target="tilemaps/json/office.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" name="office" tilewidth="16" tileheight="16" tilecount="391" columns="17">
-  <image source="F:/Downloads/Modern_Interiors_Free_v2.2/Modern tiles_Free/Interiors_free/16x16/Room_Builder_free_16x16.png" width="272" height="368"/>
+  <image source="tilemaps/tiles/office-16-16.png" width="272" height="368"/>
   <tile id="0">
    <properties>
     <property name="collides" type="bool" value="false"/>
