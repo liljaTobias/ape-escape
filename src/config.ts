@@ -15,4 +15,14 @@ export default {
       debug: true,
     },
   },
+  callbacks: {
+    postBoot: () => {
+      window.sizeChanged();
+    },
+  },
+  canvasStyle: `display: block; width: 100%; height: 100%;`,
+  autoFocus: true,
+  audio: {
+    disableWebAudio: false,
+  },
 };
