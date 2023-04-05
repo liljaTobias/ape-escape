@@ -50,6 +50,8 @@ export class Office extends Scene {
       this.wallsLayer.height
     );
 
+    this.wallsLayer.depth = 1;
+
     this.showDebugWalls();
   }
 
@@ -58,6 +60,7 @@ export class Office extends Scene {
     this.wallsLayer.renderDebug(debugGraphics, {
       tileColor: null,
       collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
+      faceColor: new Phaser.Display.Color(243, 234, 48, 255),
     });
   }
 
