@@ -1,7 +1,7 @@
 import { Scene, Tilemaps } from "phaser";
 import Player from "../entities/Player";
 
-export default class Office extends Scene {
+export class Office extends Scene {
   private player!: Player;
 
   private map!: Tilemaps.Tilemap;
@@ -10,7 +10,7 @@ export default class Office extends Scene {
   private wallsLayer!: Tilemaps.TilemapLayer;
 
   constructor() {
-    super("OfficeScne");
+    super("OfficeScene");
   }
 
   preload() {
