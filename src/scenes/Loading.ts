@@ -6,7 +6,10 @@ export class LoadingScene extends Scene {
   }
 
   preload() {
+    // Set base url
     this.load.setBaseURL("assets/");
+
+    // Load player assets
     this.load.image("king", "sprites/king.png");
     this.load.atlas(
       "a-king",

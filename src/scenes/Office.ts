@@ -1,8 +1,11 @@
 import { Scene, Tilemaps } from "phaser";
 import Player from "../entities/Player";
+import { Enemy } from "../entities/Enemy";
 
 export class Office extends Scene {
   private player!: Player;
+
+  private enemies!: Enemy[];
 
   private map!: Tilemaps.Tilemap;
   private tileset!: Tilemaps.Tileset;
@@ -26,6 +29,7 @@ export class Office extends Scene {
     this.initMap();
     this.player = new Player(this, 100, 100);
     this.physics.add.collider(this.player, this.wallsLayer);
+    this.initEnemies();
     this.initCamera();
   }
 
@@ -68,5 +72,21 @@ export class Office extends Scene {
     this.cameras.main.setSize(this.game.scale.width, this.game.scale.height);
     this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     this.cameras.main.setZoom(2);
+  }
+
+  private initEnemies() {
+    const enemyPoints = this.map.filterObjects(
+      "Enemies",
+      (obj) => obj.name === "Enemy"
+    );
+
+    this.enemies = enemyPoints.map(
+      (enemyPoint) =>
+        new Enemy(this, enemyPoint.x!, enemyPoint.y!, "king", this.player)
+    );
+
+    this.physics.add.collider(this.enemies, this.wallsLayer);
+    this.physics.add.collider(this.enemies, this.enemies);
+    this.physics.add.collider(this.player, this.enemies);
   }
 }
