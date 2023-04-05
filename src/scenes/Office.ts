@@ -26,6 +26,7 @@ export class Office extends Scene {
     this.initMap();
     this.player = new Player(this, 100, 100);
     this.physics.add.collider(this.player, this.wallsLayer);
+    this.initCamera();
   }
 
   update(): void {
@@ -58,5 +59,11 @@ export class Office extends Scene {
       tileColor: null,
       collidingTileColor: new Phaser.Display.Color(243, 234, 48, 255),
     });
+  }
+
+  private initCamera() {
+    this.cameras.main.setSize(this.game.scale.width, this.game.scale.height);
+    this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+    this.cameras.main.setZoom(2);
   }
 }
