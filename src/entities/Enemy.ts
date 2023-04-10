@@ -1,4 +1,4 @@
-import { Math, Scene } from "phaser";
+import { Math, Scene, Time } from "phaser";
 import { Actor } from "./Actor";
 import Player from "./Player";
 import { Text } from "../classes/Text";
@@ -9,7 +9,8 @@ export class Enemy extends Actor {
   private notifiedIcon: Text;
 
   // Awareness timer
-  private awTimer: number;
+  private detectionTimer: Time.TimerEvent;
+  private targetDetected = false;
 
   constructor(
     scene: Scene,
@@ -25,7 +26,18 @@ export class Enemy extends Actor {
 
     this.notifiedIcon = new Text(this.scene, this.x, this.y - this.height, "!")
       .setFontSize(12)
-      .setOrigin(0.5, 0.5);
+      .setOrigin(0.5, 0.5)
+      .setDepth(99);
+
+    // this.on("foundPlayer", this.startChasing);
+
+    this.detectionTimer = this.scene.time.addEvent({
+      delay: 3000,
+      callback: this.startChasing,
+      callbackScope: this,
+      loop: false,
+      paused: true,
+    });
   }
 
   // Put brains here
@@ -36,12 +48,22 @@ export class Enemy extends Actor {
         { x: this.target.x, y: this.target.y }
       ) < this.AGGRESSION_RADIUS
     ) {
-      this.notifiedIcon.text = "!";
-      this.getBody().setVelocityX(this.target.x - this.x);
-      this.getBody().setVelocityY(this.target.y - this.y);
+      if (this.targetDetected === false) {
+        this.notifiedIcon.text = "?";
+        this.notifiedIcon.setVisible(true);
+      }
+      this.detectionTimer.paused = false;
     } else {
-      this.notifiedIcon.text = ""; // Hide the text
-      this.getBody().setVelocity(0);
+      this.stopChasing();
+      this.detectionTimer.paused = true;
+      this.detectionTimer.remove();
+      this.detectionTimer = this.scene.time.addEvent({
+        delay: 3000,
+        callback: this.startChasing,
+        callbackScope: this,
+        loop: false,
+        paused: true,
+      });
     }
 
     this.notifiedIcon.setPosition(this.x, this.y - this.height);
@@ -52,7 +74,17 @@ export class Enemy extends Actor {
     this.target = target;
   }
 
-  private awarenessCountdown(): boolean {
-    return true;
+  private startChasing() {
+    this.targetDetected = true;
+    this.notifiedIcon.text = "!";
+    this.notifiedIcon.setVisible(true);
+    this.getBody().setVelocityX(this.target.x - this.x);
+    this.getBody().setVelocityY(this.target.y - this.y);
+  }
+
+  private stopChasing() {
+    this.targetDetected = false;
+    this.notifiedIcon.setVisible(false);
+    this.getBody().setVelocity(0);
   }
 }
