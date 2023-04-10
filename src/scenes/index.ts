@@ -1,2 +1,2 @@
-export * from "./Office";
-export * from "./Loading";
+export * from './Office'
+export * from './Loading'

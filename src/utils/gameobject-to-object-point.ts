@@ -1,1 +1,1 @@
-export const gameObjectToObjectPoints = (gameObjects: unknown[]) => {};
+export const gameObjectToObjectPoints = (gameObjects: unknown[]) => {}
