@@ -1,18 +1,19 @@
-import { GameObjects, Geom, Scene, Tilemaps } from 'phaser'
+import { GameObjects, Scene } from 'phaser'
 import { Enemy } from '../entities/Enemy'
-import { BasicEnemyState } from '../states/EnemyStates'
 import { Actor } from '../entities/Actor'
+import { Office } from '../scenes'
 
-export default class FOV extends GameObjects.Graphics {
+export default class FOV {
   private raycaster!: Raycaster
   private ray: Raycaster.Ray
 
   private actor: Enemy
+  private scene: Office
 
-  constructor(scene: Scene, actor: Enemy) {
-    super(scene)
+  constructor(scene: Office, actor: Enemy) {
+    this.scene = scene
     this.actor = actor
-    this.scene.add.existing(this)
+    // this.scene.add.existing(this)
     this.raycaster = this.scene.raycasterPlugin.createRaycaster({
       debug: {
         enabled: true,
@@ -37,17 +38,15 @@ export default class FOV extends GameObjects.Graphics {
     this.ray.castCone()
     const visibleTargets = this.ray.overlap(this.actor.getTarget()) as Actor[]
     if (visibleTargets.length > 0) {
-      this.actor.setState(BasicEnemyState.CHASING)
       const angle = Phaser.Math.Angle.Between(
         this.ray.origin.x,
         this.ray.origin.y,
         visibleTargets[0].x,
         visibleTargets[0].y
       )
-      console.log(visibleTargets[0])
       this.ray.setAngle(angle)
-    } else {
-      this.actor.setState(BasicEnemyState.IDLE)
+      return true
     }
+    return false
   }
 }

@@ -3,4 +3,5 @@ export enum BasicEnemyState {
   'MOVING',
   'CHASING',
   'ALERTED',
+  'RETURNING',
 }

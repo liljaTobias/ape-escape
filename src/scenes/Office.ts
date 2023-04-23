@@ -12,9 +12,9 @@ export class Office extends Scene {
   private map!: Tilemaps.Tilemap
   private tileset!: Tilemaps.Tileset
   private groundLayer!: Tilemaps.TilemapLayer
-  private wallsLayer!: Tilemaps.TilemapLayer
+  public wallsLayer!: Tilemaps.TilemapLayer
 
-  phaserRaycaster!: PhaserRaycaster
+  raycasterPlugin!: PhaserRaycaster
 
   constructor() {
     super('OfficeScene')

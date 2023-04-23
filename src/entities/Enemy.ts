@@ -4,9 +4,10 @@ import Player from './Player'
 import { Text } from '../classes/Text'
 import FOV from '../utils/FOV'
 import { BasicEnemyState } from '../states/EnemyStates'
+import { Office } from '../scenes'
 
 /**
- * STATES
+ * **STATES**
  * IDLE = 0
  * MOVING = 1
  * CHASING = 2
@@ -17,10 +18,7 @@ export class Enemy extends Actor {
   private target: Player
   public AGGRESSION_RADIUS = 150
   private notifiedIcon: Text
-
-  // Awareness timer
-  private detectionTimer: Time.TimerEvent
-  private targetDetected = false
+  private originalPosition: Phaser.Math.Vector2
 
   private FOV: FOV
 
@@ -33,6 +31,7 @@ export class Enemy extends Actor {
   ) {
     super(scene, x, y, texture)
     this.target = target
+    this.originalPosition = new Phaser.Math.Vector2(x, y)
 
     this.getBody().setSize(30, 30)
 
@@ -41,21 +40,19 @@ export class Enemy extends Actor {
       .setOrigin(0.5, 0.5)
       .setDepth(99)
 
-    this.detectionTimer = this.scene.time.addEvent({
-      delay: 3000,
-      callback: this.startChasing,
-      callbackScope: this,
-      loop: false,
-      paused: true,
-    })
-
     this.state = BasicEnemyState.IDLE
-    this.FOV = new FOV(scene, this)
+    this.FOV = new FOV(scene as Office, this)
   }
 
   // Put brains here
   protected preUpdate() {
     const targetFound = this.FOV.draw()
+
+    if (targetFound) {
+      this.setState(BasicEnemyState.CHASING)
+    } else if (this.state !== BasicEnemyState.IDLE) {
+      this.setState(BasicEnemyState.RETURNING)
+    }
 
     switch (this.state) {
       case BasicEnemyState.IDLE:
@@ -66,33 +63,20 @@ export class Enemy extends Actor {
         this.startChasing()
         break
 
+      case BasicEnemyState.RETURNING:
+        if (
+          this.x === this.originalPosition.x &&
+          this.y === this.originalPosition.y
+        ) {
+          this.setState(BasicEnemyState.IDLE)
+        }
+        this.returnToOriginalPosition()
+
+        break
+
       default:
         break
     }
-
-    // if (
-    //   Math.Distance.BetweenPoints(
-    //     { x: this.x, y: this.y },
-    //     { x: this.target.x, y: this.target.y }
-    //   ) < this.AGGRESSION_RADIUS
-    // ) {
-    //   if (this.targetDetected === false) {
-    //     this.notifiedIcon.text = '?'
-    //     this.notifiedIcon.setVisible(true)
-    //   }
-    //   this.detectionTimer.paused = false
-    // } else {
-    //   this.stopChasing()
-    //   this.detectionTimer.paused = true
-    //   this.detectionTimer.remove()
-    //   this.detectionTimer = this.scene.time.addEvent({
-    //     delay: 3000,
-    //     callback: this.startChasing,
-    //     callbackScope: this,
-    //     loop: false,
-    //     paused: true,
-    //   })
-    // }
 
     this.notifiedIcon.setPosition(this.x, this.y - this.height)
     this.notifiedIcon.setOrigin(0.5, 0.5)
@@ -107,7 +91,6 @@ export class Enemy extends Actor {
   }
 
   private startChasing() {
-    this.targetDetected = true
     this.notifiedIcon.text = '!'
     this.notifiedIcon.setVisible(true)
     this.getBody().setVelocityX(this.target.x - this.x)
@@ -115,8 +98,19 @@ export class Enemy extends Actor {
   }
 
   private stopChasing() {
-    this.targetDetected = false
     this.notifiedIcon.setVisible(false)
     this.getBody().setVelocity(0)
+  }
+
+  private returnToOriginalPosition() {
+    this.getBody().setVelocity(
+      this.originalPosition.x - this.x,
+      this.originalPosition.y - this.y
+    )
+    // this.scene.physics.moveTo(
+    //   this,
+    //   this.originalPosition.x,
+    //   this.originalPosition.y
+    // )
   }
 }
