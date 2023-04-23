@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import PhaserRaycaster from 'phaser-raycaster'
 
 export default {
   type: Phaser.AUTO,
@@ -24,5 +25,14 @@ export default {
   autoFocus: true,
   audio: {
     disableWebAudio: false,
+  },
+  plugins: {
+    scene: [
+      {
+        key: 'PhaserRaycaster',
+        plugin: PhaserRaycaster,
+        mapping: 'raycasterPlugin',
+      },
+    ],
   },
 }
