@@ -1,5 +1,7 @@
 import { GameObjects, Geom, Scene, Tilemaps } from 'phaser'
 import { Enemy } from '../entities/Enemy'
+import { BasicEnemyState } from '../states/EnemyStates'
+import { Actor } from '../entities/Actor'
 
 export default class FOV extends GameObjects.Graphics {
   private raycaster!: Raycaster
@@ -23,29 +25,29 @@ export default class FOV extends GameObjects.Graphics {
     this.ray.setConeDeg(60)
     this.ray.autoSlice = true
     this.ray.enablePhysics()
-    this.ray.setCollisionRange(100)
+    this.ray.setCollisionRange(this.actor.AGGRESSION_RADIUS)
     this.raycaster.mapGameObjects(this.scene.wallsLayer, false, {
       collisionTiles: [13, 46, 342, 64],
     })
-
-    this.scene.physics.add.overlap(
-      this.ray,
-      this.actor.getTarget(),
-      this.handleOverlapCollision,
-      this.ray.processOverlap.bind(this.ray)
-    )
   }
 
   draw() {
-    this.ray.setAngle(this.ray.angle + 0.01)
+    this.ray.setOrigin(this.actor.x, this.actor.y)
+    // this.ray.setAngle(this.ray.angle + 0.01)
     this.ray.castCone()
-    const visibleTargets = this.ray.overlap(this.actor.getTarget())
-    // if (visibleTargets.length > 0) {
-    //   console.log('Found playyer', this.scene.physics)
-    // }
-  }
-
-  handleOverlapCollision(rayFOVCircle, target) {
-    console.log(target, rayFOVCircle)
+    const visibleTargets = this.ray.overlap(this.actor.getTarget()) as Actor[]
+    if (visibleTargets.length > 0) {
+      this.actor.setState(BasicEnemyState.CHASING)
+      const angle = Phaser.Math.Angle.Between(
+        this.ray.origin.x,
+        this.ray.origin.y,
+        visibleTargets[0].x,
+        visibleTargets[0].y
+      )
+      console.log(visibleTargets[0])
+      this.ray.setAngle(angle)
+    } else {
+      this.actor.setState(BasicEnemyState.IDLE)
+    }
   }
 }

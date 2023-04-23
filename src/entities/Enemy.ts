@@ -3,10 +3,19 @@ import { Actor } from './Actor'
 import Player from './Player'
 import { Text } from '../classes/Text'
 import FOV from '../utils/FOV'
+import { BasicEnemyState } from '../states/EnemyStates'
+
+/**
+ * STATES
+ * IDLE = 0
+ * MOVING = 1
+ * CHASING = 2
+ * ALERTED = 3
+ */
 
 export class Enemy extends Actor {
   private target: Player
-  private AGGRESSION_RADIUS = 100
+  public AGGRESSION_RADIUS = 150
   private notifiedIcon: Text
 
   // Awareness timer
@@ -40,36 +49,50 @@ export class Enemy extends Actor {
       paused: true,
     })
 
+    this.state = BasicEnemyState.IDLE
     this.FOV = new FOV(scene, this)
   }
 
   // Put brains here
   protected preUpdate() {
-    this.FOV.draw()
+    const targetFound = this.FOV.draw()
 
-    if (
-      Math.Distance.BetweenPoints(
-        { x: this.x, y: this.y },
-        { x: this.target.x, y: this.target.y }
-      ) < this.AGGRESSION_RADIUS
-    ) {
-      if (this.targetDetected === false) {
-        this.notifiedIcon.text = '?'
-        this.notifiedIcon.setVisible(true)
-      }
-      this.detectionTimer.paused = false
-    } else {
-      this.stopChasing()
-      this.detectionTimer.paused = true
-      this.detectionTimer.remove()
-      this.detectionTimer = this.scene.time.addEvent({
-        delay: 3000,
-        callback: this.startChasing,
-        callbackScope: this,
-        loop: false,
-        paused: true,
-      })
+    switch (this.state) {
+      case BasicEnemyState.IDLE:
+        this.stopChasing()
+        break
+
+      case BasicEnemyState.CHASING:
+        this.startChasing()
+        break
+
+      default:
+        break
     }
+
+    // if (
+    //   Math.Distance.BetweenPoints(
+    //     { x: this.x, y: this.y },
+    //     { x: this.target.x, y: this.target.y }
+    //   ) < this.AGGRESSION_RADIUS
+    // ) {
+    //   if (this.targetDetected === false) {
+    //     this.notifiedIcon.text = '?'
+    //     this.notifiedIcon.setVisible(true)
+    //   }
+    //   this.detectionTimer.paused = false
+    // } else {
+    //   this.stopChasing()
+    //   this.detectionTimer.paused = true
+    //   this.detectionTimer.remove()
+    //   this.detectionTimer = this.scene.time.addEvent({
+    //     delay: 3000,
+    //     callback: this.startChasing,
+    //     callbackScope: this,
+    //     loop: false,
+    //     paused: true,
+    //   })
+    // }
 
     this.notifiedIcon.setPosition(this.x, this.y - this.height)
     this.notifiedIcon.setOrigin(0.5, 0.5)
