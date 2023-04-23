@@ -1,4 +1,4 @@
 interface Window {
-  sizeChanged: () => void;
-  game: Phaser.Game;
+  sizeChanged: () => void
+  game: Phaser.Game
 }

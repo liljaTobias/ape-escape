@@ -2,6 +2,7 @@ import { Math, Scene, Time } from 'phaser'
 import { Actor } from './Actor'
 import Player from './Player'
 import { Text } from '../classes/Text'
+import FOV from '../utils/FOV'
 
 export class Enemy extends Actor {
   private target: Player
@@ -11,6 +12,8 @@ export class Enemy extends Actor {
   // Awareness timer
   private detectionTimer: Time.TimerEvent
   private targetDetected = false
+
+  private FOV: FOV
 
   constructor(
     scene: Scene,
@@ -36,10 +39,14 @@ export class Enemy extends Actor {
       loop: false,
       paused: true,
     })
+
+    this.FOV = new FOV(scene, this)
   }
 
   // Put brains here
   protected preUpdate() {
+    this.FOV.draw()
+
     if (
       Math.Distance.BetweenPoints(
         { x: this.x, y: this.y },
@@ -70,6 +77,10 @@ export class Enemy extends Actor {
 
   setTarget(target: Player) {
     this.target = target
+  }
+
+  getTarget() {
+    return this.target
   }
 
   private startChasing() {

@@ -2,6 +2,8 @@ import { Scene, Tilemaps } from 'phaser'
 import Player from '../entities/Player'
 import { Enemy } from '../entities/Enemy'
 
+import PhaserRaycaster from 'phaser-raycaster'
+
 export class Office extends Scene {
   private player!: Player
 
@@ -11,6 +13,8 @@ export class Office extends Scene {
   private tileset!: Tilemaps.Tileset
   private groundLayer!: Tilemaps.TilemapLayer
   private wallsLayer!: Tilemaps.TilemapLayer
+
+  phaserRaycaster!: PhaserRaycaster
 
   constructor() {
     super('OfficeScene')
