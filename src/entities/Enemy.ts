@@ -42,6 +42,11 @@ export class Enemy extends Actor {
 
     this.state = BasicEnemyState.IDLE
     this.FOV = new FOV(scene as Office, this)
+
+    this.on('STATE_CHANGE', (s: BasicEnemyState) => {
+      console.log('STATE CHANGED TO ', BasicEnemyState[s])
+      this.setState(s)
+    })
   }
 
   // Put brains here
@@ -49,9 +54,7 @@ export class Enemy extends Actor {
     const targetFound = this.FOV.draw()
 
     if (targetFound) {
-      this.setState(BasicEnemyState.CHASING)
-    } else if (this.state !== BasicEnemyState.IDLE) {
-      this.setState(BasicEnemyState.RETURNING)
+      this.emit('STATE_CHANGE', BasicEnemyState.CHASING)
     }
 
     switch (this.state) {
@@ -60,6 +63,9 @@ export class Enemy extends Actor {
         break
 
       case BasicEnemyState.CHASING:
+        if (!targetFound) {
+          this.emit('STATE_CHANGE', BasicEnemyState.SEARCHING)
+        }
         this.startChasing()
         break
 
@@ -72,6 +78,10 @@ export class Enemy extends Actor {
         }
         this.returnToOriginalPosition()
 
+        break
+
+      case BasicEnemyState.SEARCHING:
+        this.search()
         break
 
       default:
@@ -112,5 +122,13 @@ export class Enemy extends Actor {
     //   this.originalPosition.x,
     //   this.originalPosition.y
     // )
+  }
+
+  private search() {
+    this.getBody().setVelocity(0)
+    this.setRotation(this.rotation + 0.01)
+    setTimeout(() => {
+      this.emit('STATE_CHANGE', BasicEnemyState.RETURNING)
+    }, 2000)
   }
 }

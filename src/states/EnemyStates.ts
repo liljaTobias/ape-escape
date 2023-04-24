@@ -2,6 +2,6 @@ export enum BasicEnemyState {
   'IDLE',
   'MOVING',
   'CHASING',
-  'ALERTED',
+  'SEARCHING',
   'RETURNING',
 }

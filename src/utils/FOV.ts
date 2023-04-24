@@ -1,4 +1,3 @@
-import { GameObjects, Scene } from 'phaser'
 import { Enemy } from '../entities/Enemy'
 import { Actor } from '../entities/Actor'
 import { Office } from '../scenes'
