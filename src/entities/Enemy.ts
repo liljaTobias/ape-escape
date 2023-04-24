@@ -44,7 +44,7 @@ export class Enemy extends Actor {
     this.FOV = new FOV(scene as Office, this)
 
     this.on('STATE_CHANGE', (s: BasicEnemyState) => {
-      console.log('STATE CHANGED TO ', BasicEnemyState[s])
+      // console.log('STATE CHANGED TO ', BasicEnemyState[s])
       this.setState(s)
     })
   }
@@ -52,6 +52,7 @@ export class Enemy extends Actor {
   // Put brains here
   protected preUpdate() {
     const targetFound = this.FOV.draw()
+    this.getDirection()
 
     if (targetFound) {
       this.emit('STATE_CHANGE', BasicEnemyState.CHASING)
@@ -92,6 +93,31 @@ export class Enemy extends Actor {
     this.notifiedIcon.setOrigin(0.5, 0.5)
   }
 
+  // TODO: Implement when using tiles
+  getDirection() {
+    switch (this.getBody().facing) {
+      case Phaser.Physics.Arcade.FACING_RIGHT:
+        console.log('FACING RIGHT')
+
+        return
+
+      case Phaser.Physics.Arcade.FACING_LEFT:
+        console.log('FACING LEFT')
+        break
+
+      case Phaser.Physics.Arcade.FACING_DOWN:
+        console.log('FACING DOWN')
+        break
+
+      case Phaser.Physics.Arcade.FACING_UP:
+        console.log('FACING UP')
+        break
+
+      case Phaser.Physics.Arcade.FACING_NONE:
+        break
+    }
+  }
+
   setTarget(target: Player) {
     this.target = target
   }
@@ -103,6 +129,8 @@ export class Enemy extends Actor {
   private startChasing() {
     this.notifiedIcon.text = '!'
     this.notifiedIcon.setVisible(true)
+    const angle = Phaser.Math.Angle.BetweenPoints(this, this.target)
+    this.setRotation(angle)
     this.getBody().setVelocityX(this.target.x - this.x)
     this.getBody().setVelocityY(this.target.y - this.y)
   }
@@ -117,11 +145,6 @@ export class Enemy extends Actor {
       this.originalPosition.x - this.x,
       this.originalPosition.y - this.y
     )
-    // this.scene.physics.moveTo(
-    //   this,
-    //   this.originalPosition.x,
-    //   this.originalPosition.y
-    // )
   }
 
   private search() {

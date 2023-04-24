@@ -12,7 +12,6 @@ export default class FOV {
   constructor(scene: Office, actor: Enemy) {
     this.scene = scene
     this.actor = actor
-    // this.scene.add.existing(this)
     this.raycaster = this.scene.raycasterPlugin.createRaycaster({
       debug: {
         enabled: true,
@@ -33,17 +32,10 @@ export default class FOV {
 
   draw() {
     this.ray.setOrigin(this.actor.x, this.actor.y)
-    // this.ray.setAngle(this.ray.angle + 0.01)
+    this.ray.setAngle(this.actor.rotation)
     this.ray.castCone()
     const visibleTargets = this.ray.overlap(this.actor.getTarget()) as Actor[]
     if (visibleTargets.length > 0) {
-      const angle = Phaser.Math.Angle.Between(
-        this.ray.origin.x,
-        this.ray.origin.y,
-        visibleTargets[0].x,
-        visibleTargets[0].y
-      )
-      this.ray.setAngle(angle)
       return true
     }
     return false
